@@ -31,17 +31,23 @@
                   <span class="current">¥{{food.price}}</span>
                   <span class="past" v-show="food.oldPrice">¥{{food.oldPrice}}</span>
                 </div>
+                <div class="food-control-wrapper">
+                  <food-control :food="food"></food-control>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
+    <shop-cart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shop-cart>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
+  import ShopCart from 'components/shopcart/shopcart';
+  import FoodControl from 'components/foodcontrol/foodcontrol';
   const NO_ERR = 0;
 
   export default{
@@ -70,6 +76,17 @@
           }
         }
         return 0;
+      },
+      selectFoods() {
+        let foods = [];
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              foods.push(food);
+            }
+          });
+        });
+        return foods;
       }
     },
     created() {
@@ -91,6 +108,7 @@
           click: true
         });
         this.foodsScroll = new BScroll(this.$els.foodsWrapper, {
+          click: true,
           probeType: 3
         });
         this.foodsScroll.on('scroll', (pos) => {
@@ -115,6 +133,10 @@
         let el = foodList[index];
         this.foodsScroll.scrollToElement(el, 300);
       }
+    },
+    components: {
+      ShopCart,
+      FoodControl
     }
   };
 </script>
@@ -219,4 +241,8 @@
               text-decoration line-through
               font-size 10px
               color rgb(147, 153, 159)
+          .food-control-wrapper
+            position absolute
+            right 0
+            bottom 12px
 </style>
